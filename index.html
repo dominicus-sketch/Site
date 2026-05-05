@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SL AcademicSystem</title>
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<h1 class="logo"  onclick="window.location.href='CLASScore.html'">
+  SL AcademicSystem
+</h1>
+
+<!-- <h1 class="logo">SL AcademicSystem</h1> -->
+
+<p id="aviso"></p>
+
+<div class="form">
+
+<input id="usuario" placeholder="Usuário">
+<input id="turma" placeholder="Turma">
+<input id="numero" type="number" placeholder="Número">
+<input id="senha" type="password" placeholder="Senha">
+
+<button onclick="cadastrar()">Cadastrar</button>
+<button onclick="login()">Entrar</button>
+
+</div>
+
+<script src="login.js"></script>
+</body>
+</html>
+
+---o código acima é o index inicial
+
+
+body{
+  
+  
+    background: linear-gradient(135deg, rgb(10, 25, 60), rgb(20, 80, 150));
+    
+      
+backdrop-filter: blur(20px);
+  
+  
+  color:white;
+  font-family:Arial;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+}
+
+.logo{
+  margin-top:20px;
+}
+
+
+.logo{
+  border-radius: 5px;
+  width: auto;
+  height: 100px;
+  padding: 5px 50px;
+ background-image:linear-gradient(45deg,#2563EB,#60A5FA
+ );
+}
+
+
+
+
+
+.form{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  width:220px;
+  margin-top:30px;
+}
+
+input,button{
+  padding:10px;
+  border:none;
+  border-radius:6px;
+}
+
+button{
+  background:#3b82f6;
+  color:white;
+  cursor:pointer;
+}
+
+--acima o CSS inicial
+
+
+// CADASTRO
+function cadastrar(){
+
+  let user = document.getElementById('usuario').value;
+  let turma = document.getElementById('turma').value;
+  let numero = document.getElementById('numero').value;
+  let senha = document.getElementById('senha').value;
+
+  if(!user || !turma || !numero || !senha){
+    document.getElementById('aviso').innerText="Preencha tudo";
+    return;
+  }
+
+  let users = JSON.parse(localStorage.getItem('users') || '[]');
+
+  if(users.find(u=>u.usuario===user)){
+    document.getElementById('aviso').innerText="Usuário já existe";
+    return;
+  }
+
+  users.push({
+    usuario:user,
+    turma,
+    numero,
+    senha,
+    saldo:250
+  });
+
+  localStorage.setItem('users', JSON.stringify(users));
+
+  document.getElementById('aviso').innerText="Conta criada!";
+}
+
+
+// LOGIN
+function login(){
+
+  let user = document.getElementById('usuario').value;
+  let senha = document.getElementById('senha').value;
+
+  let users = JSON.parse(localStorage.getItem('users') || '[]');
+
+  let found = users.find(u=>u.usuario===user && u.senha===senha);
+
+  if(!found){
+    document.getElementById('aviso').innerText="Login errado";
+    return;
+  }
+
+  localStorage.setItem('userLogado', JSON.stringify(found));
+
+  window.location.href="app.html";
+}
+
+--acima está o js inicial
+
+
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sistema</title>
+<link rel="stylesheet" href="app.css">
+</head>
+
+<body>
+
+<div class="menu-btn" onclick="menu()">⋮</div>
+
+<div class="sidebar" id="sidebar">
+<button onclick="secao('perfil')">Perfil</button>
+<button onclick="secao('loja')">Loja</button>
+<button onclick="secao('mensagens')">Mensagens</button>
+<button onclick="secao('missoes')">Missões</button>
+</div>
+
+<div class="main">
+
+<div id="perfil" class="secao">
+<h2>Perfil</h2>
+<p id="nome"></p>
+<p id="turma"></p>
+<p>Pontos: <span id="saldo"></span></p>
+</div>
+
+<div id="loja" class="secao">
+<h2>💰 Pontos: <span id="pontos"></span></h2>
+<div class="cards" id="cards"></div>
+
+<h3>🔥 Buffs Ativos</h3>
+<div class="cards" id="buffs"></div>
+</div>
+
+<div id="mensagens" class="secao">
+<h3>📨 Mensagens</h3>
+<div class="card">Teste especial amanhã</div>
+<div class="card">Feira de ciência + pontos</div>
+
+<h3>⚠️ Spam</h3>
+<div id="spam"></div>
+</div>
+
+<div id="missoes" class="secao">
+<div class="card">Prova Matemática +50 / -30</div>
+<div class="card">Avaliação contínua +20 / -10</div>
+</div>
+
+</div>
+
+<script src="app.js"></script>
+
+</body>
+</html>
+
+--acima está o APP.html
+
+
+body{
+margin:0;
+background: linear-gradient(135deg, rgb(10, 25, 60), rgb(20, 80, 150));
+color:white;
+font-family:Arial;
+}
+
+.menu-btn{
+position:fixed;
+top:10px;
+left:10px;
+font-size:25px;
+cursor:pointer;
+}
+
+.sidebar{
+  position:fixed;
+  left:-250px;
+  width:200px;
+  height:100%;
+  background:#1e40af;
+  padding:20px;
+  transition:0.3s;
+}
+
+.sidebar.ativo{
+  left:0;
+}
+
+.sidebar button{
+width:100%;
+padding:12px;
+margin-top:10px;
+border:none;
+background:rgba(255,255,255,0.08);
+color:white;
+border-radius:8px;
+text-align:left;
+}
+
+.secao{
+display:none;
+padding:70px 20px;
+opacity:0;
+transform:translateY(20px);
+transition:0.4s;
+}
+
+.secao.ativa{
+display:block;
+opacity:1;
+transform:translateY(0);
+}
+
+/* CARROSSEL */
+.cards{
+display:flex;
+gap:10px;
+overflow-x:auto;
+scroll-snap-type:x mandatory;
+}
+
+.card{
+min-width:160px;
+scroll-snap-align:start;
+margin:15px;
+padding:15px;
+background: linear-gradient(135deg, rgb(0, 40, 90), rgb(0, 120, 255));
+box-shadow: 0 10px 35px rgba(0, 120, 255, 0.25);
+border-radius:12px;
+transition:0.3s;
+}
+
+.card:hover{
+transform:scale(1.05);
+}
+
+.card:active{
+transform:scale(0.95);
+}
+
+/* BUFFS */
+#buffs{
+flex-wrap:wrap;
+}
+
+#buffs .card{
+width:45%;
+}
+
+input,select,button{
+width:100%;
+padding:10px;
+margin-top:8px;
+border:none;
+border-radius:8px;
+}
+
+button{
+background:#3b82f6;
+color:white;
+cursor:pointer;
+}
+
+---o APP.css
+
+
+const user = JSON.parse;
+
+document.getElementById('nome').innerText = user.usuario;
+document.getElementById('turma').innerText = user.turma;
+document.getElementById('saldo').innerText = user.saldo;
+
+let sidebar = document.getElementById('sidebar');
+
+function menu(){
+sidebar.classList.toggle('ativo');
+}
+
+function secao(id){
+document.querySelectorAll('.secao').forEach(s=>{
+s.classList.remove('ativa');
+});
+
+let el = document.getElementById(id);
+el.style.display="block";
+
+setTimeout(()=>{
+el.classList.add('ativa');
+},50);
+
+sidebar.classList.remove('ativo');
+
+if(id==="loja"){
+loja();
+buffs();
+}
+
+if(id==="mensagens"){
+spam();
+}
+}
+
+window.onload = ()=>secao('perfil');
+
+// LOJA
+let produtos = [
+{nome:"Dispensar Prova", preco:200},
+{nome:"+2 Nota", preco:150},
+{nome:"+3 Nota", preco:300},
+{nome:"Pátio Livre", preco:400},
+{nome:"Hack Nota", preco:800}
+];
+
+function loja(){
+let c = document.getElementById('cards');
+c.innerHTML="";
+document.getElementById('pontos').innerText=user.saldo;
+
+produtos.forEach(p=>{
+let div=document.createElement('div');
+div.className="card";
+div.innerHTML=`
+<h4>${p.nome}</h4>
+<p>${p.preco} pts</p>
+<button onclick="comprar('${p.nome}')">Comprar</button>
+`;
+c.appendChild(div);
+});
+}
+
+function comprar(nome){
+let p = produtos.find(x=>x.nome===nome);
+
+if(user.saldo < p.preco){
+alert("Sem pontos");
+return;
+}
+
+user.saldo -= p.preco;
+
+let buffs = JSON.parse(localStorage.getItem('buffs')||'[]');
+buffs.push(p);
+
+localStorage.setItem('buffs',JSON.stringify(buffs));
+localStorage.setItem('userLogado',JSON.stringify(user));
+
+loja();
+buffs();
+}
+
+// BUFFS
+function buffs(){
+let b = document.getElementById('buffs');
+let buffs = JSON.parse(localStorage.getItem('buffs')||'[]');
+
+b.innerHTML="";
+
+buffs.forEach((x,i)=>{
+let div=document.createElement('div');
+div.className="card";
+
+div.innerHTML=`
+<h4>${x.nome}</h4>
+<button onclick="usar(${i})">Usar</button>
+`;
+
+b.appendChild(div);
+});
+}
+
+function usar(i){
+let buffs = JSON.parse(localStorage.getItem('buffs')||'[]');
+buffs.splice(i,1);
+localStorage.setItem('buffs',JSON.stringify(buffs));
+buffs();
+}
+
+// MENSAGENS
+function spam(){
+let s=document.getElementById('spam');
+
+let dados = JSON.parse(localStorage.getItem('spam') || JSON.stringify([
+"Desafio: nota máxima",
+"Desafio: sem negativas",
+"Desafio: debate"
+]));
+
+s.innerHTML="";
+
+dados.forEach((d,i)=>{
+let div=document.createElement('div');
+div.className="card";
+
+div.innerHTML=`
+${d}
+<br><br>
+<button onclick="apagarMsg(${i})">🗑️ Apagar</button>
+`;
+
+s.appendChild(div);
+});
+}
+
+function apagarMsg(i){
+let dados = JSON.parse(localStorage.getItem('spam') || '[]');
+dados.splice(i,1);
+localStorage.setItem('spam', JSON.stringify(dados));
+spam();
+}
+
+--acima o APP.js
+
+
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CLASScore Elite</title>
+<link rel="stylesheet" href="app.css">
+</head>
+
+<body>
+  
+  
+  
+  
+  
+  
+  
+  
+
+<div class="header">
+  <h1>📊 CLASScore Elite</h1>
+  <p id="userInfo"></p>
+</div>
+
+<!-- STATUS -->
+<div class="card">
+  <h2>🎓 Perfil</h2>
+  <p>Nome: <span id="nome"></span></p>
+  <p>Turma: <span id="turma"></span></p>
+  <p>Pontos: <span id="pontos"></span></p>
+</div>
+
+<!-- FEED SOCIAL -->
+<div class="card">
+  <h2>📢 Feed da Turma</h2>
+
+  <input id="postTexto" placeholder="No que estás a pensar?">
+  <button onclick="postar()">Publicar</button>
+
+  <div id="feed" class="carrossel"></div>
+</div>
+
+<!-- DIRETÓRIO (FACEBOOK HARVARD) -->
+<div class="card">
+  <h2>👥 Alunos  s  ok)</h2>
+  <div id="alunos" class="carrossel"></div>
+</div>
+
+<!-- DESAFIOS -->
+<div class="card">
+  <h2>⚔️ Desafiar</h2>
+
+  <input id="aluno" placeholder="Nome do aluno">
+  
+  <select id="desafio">
+    <option>Nota mais alta</option>
+    <option>Sem negativas</option>
+    <option>Debate</option>
+    <option>Ranking semanal</option>
+  </select>
+
+  <input id="aposta" type="number" placeholder="Aposta">
+
+  <button onclick="desafiar()">Enviar</button>
+</div>
+
+<!-- HISTÓRICO -->
+<div class="card">
+  <h2>📜 Histórico</h2>
+  <div id="historico"></div>
+</div>
+
+<!-- RANKING -->
+<div class="card">
+  <h2>🏆 Ranking</h2>
+  <div id="ranking"></div>
+</div>
+
+
+
+
+<div class="card">
+  <h2>📢 Feed da Turma</h2>
+
+  <input id="postTexto" placeholder="No que estás a pensar?">
+  <button onclick="postar()">Publicar</button>
+
+  <div id="feed" class="carrossel"></div>
+</div>
+
+  <div id="alunos" class="carrossel"></div>
+</div>
+
+
+
+
+<script src="clsscore.js"></script>
+</body>
+</html>
+
+--acima o CLASScore.html
+
+
+let user = JSON.parse(localStorage.getItem('userLogado'));
+
+document.getElementById('nome').innerText = user.usuario;
+document.getElementById('turma').innerText = user.turma;
+document.getElementById('pontos').innerText = user.saldo;
+
+document.getElementById('userInfo').innerText =
+"Bem-vindo ao sistema de controlo elite";
+
+
+// 📜 HISTÓRICO
+function carregarHistorico(){
+  let hist = JSON.parse(localStorage.getItem('historico') || '[]');
+
+  let div = document.getElementById('historico');
+  div.innerHTML="";
+
+  hist.forEach(h=>{
+    let p = document.createElement('p');
+    p.innerText = h;
+    div.appendChild(p);
+  });
+}
+
+
+// ⚔️ DESAFIO ENTRE ALUNOS
+function desafiar(){
+
+  let alvo = document.getElementById('aluno').value;
+  let tipo = document.getElementById('desafio').value;
+  let aposta = parseInt(document.getElementById('aposta').value);
+
+  if(!alvo || !aposta){
+    alert("Preencha tudo");
+    return;
+  }
+
+  let hist = JSON.parse(localStorage.getItem('historico') || '[]');
+
+  let texto = `⚔️ Desafio: ${user.usuario} vs ${alvo} | ${tipo} | aposta ${aposta} pts`;
+
+  hist.push(texto);
+
+  localStorage.setItem('historico', JSON.stringify(hist));
+
+  carregarHistorico();
+}
+
+
+// 🏆 RANKING SIMPLES
+function carregarRanking(){
+
+  let users = JSON.parse(localStorage.getItem('users') || '[]');
+
+  users.sort((a,b)=>b.saldo - a.saldo);
+
+  let div = document.getElementById('ranking');
+  div.innerHTML="";
+
+  users.forEach((u,i)=>{
+    let p = document.createElement('p');
+    p.innerText = `${i+1}º ${u.usuario} - ${u.saldo} pts`;
+    div.appendChild(p);
+  });
+}
+
+
+
+
+
+document.querySelectorAll('.card').forEach(card => {
+  card.addEventListener('click', () => {
+    let audio = new Audio("https://www.myinstants.com/media/sounds/mouse-click.mp3");
+    audio.play();
+  });
+});
+
+
+
+
+// INIT
+carregarHistorico();
+carregarRanking();
+
+
+--acima o classcore.js
